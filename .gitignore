@@ -1,0 +1,34 @@
+## Visual Studio / IDE-uri
+.vs/
+*.suo
+*.user
+*.userprefs
+*.lock.json
+
+## ASP.NET Core / Build Outputs
+bin/
+obj/
+publish/
+[Ll]ogs/
+*.log
+
+## Baza de date SQLite
+*.db
+*.db-journal
+*.db-wal
+*.sqlite
+*.sqlite3
+
+## Dependențe Frontend (dacă folosești Node/npm pentru Bootstrap sau pachete)
+node_modules/
+bower_components/
+
+## Fișiere de configurare sensibile (Cheile API Stripe, Connection Strings locale)
+appsettings.Development.json
+appsettings.json
+.env
+secrets.json
+
+## Altele (fișiere temporare ale sistemului de operare)
+.DS_Store
+Thumbs.db
