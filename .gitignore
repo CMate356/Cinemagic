@@ -15,6 +15,7 @@ publish/
 ## Baza de date SQLite
 *.db
 *.db-journal
+*.db-shm
 *.db-wal
 *.sqlite
 *.sqlite3
@@ -25,7 +26,6 @@ bower_components/
 
 ## Fișiere de configurare sensibile (Cheile API Stripe, Connection Strings locale)
 appsettings.Development.json
-appsettings.json
 .env
 secrets.json
 
