@@ -1,31 +1,84 @@
-html {
-  font-size: 14px;
+
+:root {
+    --bg-main: #0b0e14;
+    --bg-card: #14182e;
+    --bg-input: #101422;
+   
+    --text-primary: #ffffff;
+    --text-muted: #8c94a8;
+    --text-gold: #f3ba42;
+    
+    --accent-gold: #f3ba42;
+    --accent-gold-hover: #d9a232;
+    --accent-dark-btn: #1a2035;
+    
+    --border-color: #232a40;
+    --border-gold: rgba(243, 186, 66, 0.4);
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
 
 body {
-  margin-bottom: 60px;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+
+h1, h2, h3, .brand-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    letter-spacing: 1px;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.text-gold {
+    color: var(--text-gold) !important;
 }
+
+.card, .panel-box {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+}
+
+.btn-gold {
+    background-color: var(--accent-gold);
+    color: #0b0e14;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    transition: all 0.2s ease-in-out;
+}
+
+    .btn-gold:hover {
+        background-color: var(--accent-gold-hover);
+        color: #000000;
+    }
+
+
+.btn-outline-gold {
+    background-color: var(--accent-dark-btn);
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+    .btn-outline-gold:hover, .btn-outline-gold.active {
+        background-color: var(--accent-gold);
+        color: #0b0e14;
+    }
+
+.form-control, .form-select {
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 6px;
+}
+
+    .form-control:focus, .form-select:focus {
+        background-color: var(--bg-input);
+        border-color: var(--accent-gold);
+        color: var(--text-primary);
+        box-shadow: 0 0 0 0.25rem rgba(243, 186, 66, 0.25);
+    }
