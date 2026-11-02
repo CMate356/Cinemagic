@@ -27,20 +27,34 @@ namespace Cinemagic.Models
         public string Status { get; set; } = "Pending";
         [StringLength(150)]
         public string ContactEmail { get; set; } = string.Empty;
-        public string DeliveryAddress { get; set; } = string.Empty;
 
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal Subtotal { get; set; }
+        // Adresa de livrare in coloane atomice (copie la momentul comenzii)
+        [Required]
+        [StringLength(200)]
+        public string ShippingStreet { get; set; } = string.Empty;
+        [Required]
+        [StringLength(100)]
+        public string ShippingCity { get; set; } = string.Empty;
+        [Required]
+        [StringLength(20)]
+        public string ShippingPhone { get; set; } = string.Empty;
+
         [Column(TypeName = "decimal(18,2)")]
         public decimal DeliveryCost { get; set; }
         [Column(TypeName = "decimal(18,2)")]
         public decimal DiscountAmount { get; set; }
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal TotalAmount { get; set; }
 
-        public string StripeSessionId { get; set; } = string.Empty;
+        [StringLength(100)]
+        public string? StripeSessionId { get; set; }
 
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public ICollection<StripeEvent> StripeEvents { get; set; } = new List<StripeEvent>();
+
+        // Valori calculate, nu coloane. Necesita Include(o => o.OrderItems).
+        [NotMapped]
+        public decimal Subtotal => OrderItems.Sum(i => i.Quantity * i.UnitPrice);
+
+        [NotMapped]
+        public decimal TotalAmount => Subtotal + DeliveryCost - DiscountAmount;
     }
 }

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cinemagic.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261026100829_AddCompleteErdTables")]
-    partial class AddCompleteErdTables
+    [Migration("20261102101851_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,7 +49,10 @@ namespace Cinemagic.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Addresses_OneDefaultPerUser")
+                        .HasFilter("\"IsDefault\" = 1");
 
                     b.ToTable("Addresses");
                 });
@@ -68,7 +71,8 @@ namespace Cinemagic.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Carts");
                 });
@@ -93,13 +97,26 @@ namespace Cinemagic.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CartId");
-
                     b.HasIndex("ProductId");
 
                     b.HasIndex("ScreeningId");
 
-                    b.ToTable("CartItems");
+                    b.HasIndex("CartId", "ProductId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_CartItems_Cart_Product")
+                        .HasFilter("\"ScreeningId\" IS NULL");
+
+                    b.HasIndex("CartId", "ScreeningId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_CartItems_Cart_Screening")
+                        .HasFilter("\"ProductId\" IS NULL");
+
+                    b.ToTable("CartItems", t =>
+                        {
+                            t.HasCheckConstraint("CK_CartItems_ProductOrScreening", "(\"ProductId\" IS NOT NULL AND \"ScreeningId\" IS NULL) OR (\"ProductId\" IS NULL AND \"ScreeningId\" IS NOT NULL)");
+
+                            t.HasCheckConstraint("CK_CartItems_Quantity", "\"Quantity\" > 0");
+                        });
                 });
 
             modelBuilder.Entity("Cinemagic.Models.Category", b =>
@@ -197,7 +214,31 @@ namespace Cinemagic.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DiscountCodes");
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("DiscountCodes", t =>
+                        {
+                            t.HasCheckConstraint("CK_DiscountCodes_Type", "\"Type\" IN ('Fixed', 'Percentage')");
+                        });
+                });
+
+            modelBuilder.Entity("Cinemagic.Models.FilmCast", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PersonId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BillingOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ProductId", "PersonId");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("FilmCasts");
                 });
 
             modelBuilder.Entity("Cinemagic.Models.FilmDetails", b =>
@@ -205,24 +246,12 @@ namespace Cinemagic.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Agerating")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Cast")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Director")
+                    b.Property<string>("AgeRating")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("DurationMinutes")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("Genre")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("OriginalTitle")
                         .IsRequired()
@@ -240,6 +269,55 @@ namespace Cinemagic.Migrations
                     b.ToTable("FilmDetails");
                 });
 
+            modelBuilder.Entity("Cinemagic.Models.FilmDirector", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PersonId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ProductId", "PersonId");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("FilmDirectors");
+                });
+
+            modelBuilder.Entity("Cinemagic.Models.FilmGenre", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GenreId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ProductId", "GenreId");
+
+                    b.HasIndex("GenreId");
+
+                    b.ToTable("FilmGenres");
+                });
+
+            modelBuilder.Entity("Cinemagic.Models.Genre", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Genres");
+                });
+
             modelBuilder.Entity("Cinemagic.Models.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -249,10 +327,6 @@ namespace Cinemagic.Migrations
                     b.Property<string>("ContactEmail")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DeliveryAddress")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("DeliveryCost")
@@ -270,20 +344,29 @@ namespace Cinemagic.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ShippingCity")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ShippingPhone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ShippingStreet")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("StripeSessionId")
-                        .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Subtotal")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
@@ -293,6 +376,9 @@ namespace Cinemagic.Migrations
                     b.HasIndex("DeliveryMethodId");
 
                     b.HasIndex("DiscountCodeId");
+
+                    b.HasIndex("StripeSessionId")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -322,13 +408,42 @@ namespace Cinemagic.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
-
                     b.HasIndex("ProductId");
 
                     b.HasIndex("ScreeningId");
 
-                    b.ToTable("OrderItems");
+                    b.HasIndex("OrderId", "ProductId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_OrderItems_Order_Product")
+                        .HasFilter("\"ScreeningId\" IS NULL");
+
+                    b.HasIndex("OrderId", "ScreeningId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_OrderItems_Order_Screening")
+                        .HasFilter("\"ProductId\" IS NULL");
+
+                    b.ToTable("OrderItems", t =>
+                        {
+                            t.HasCheckConstraint("CK_OrderItems_ProductOrScreening", "(\"ProductId\" IS NOT NULL AND \"ScreeningId\" IS NULL) OR (\"ProductId\" IS NULL AND \"ScreeningId\" IS NOT NULL)");
+
+                            t.HasCheckConstraint("CK_OrderItems_Quantity", "\"Quantity\" > 0");
+                        });
+                });
+
+            modelBuilder.Entity("Cinemagic.Models.Person", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("People");
                 });
 
             modelBuilder.Entity("Cinemagic.Models.Product", b =>
@@ -369,13 +484,20 @@ namespace Cinemagic.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", t =>
+                        {
+                            t.HasCheckConstraint("CK_Products_Price", "\"Price\" >= 0");
+
+                            t.HasCheckConstraint("CK_Products_Stock", "\"StockQuantity\" >= 0");
+                        });
                 });
 
             modelBuilder.Entity("Cinemagic.Models.Review", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Comment")
@@ -388,22 +510,17 @@ namespace Cinemagic.Migrations
                     b.Property<bool>("IsHidden")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("Rating")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "ProductId");
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", t =>
+                        {
+                            t.HasCheckConstraint("CK_Reviews_Rating", "\"Rating\" BETWEEN 1 AND 5");
+                        });
                 });
 
             modelBuilder.Entity("Cinemagic.Models.Screening", b =>
@@ -446,7 +563,10 @@ namespace Cinemagic.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Screenings");
+                    b.ToTable("Screenings", t =>
+                        {
+                            t.HasCheckConstraint("CK_Screenings_Seats", "\"AvailableSeats\" >= 0 AND \"AvailableSeats\" <= \"TotalSeats\"");
+                        });
                 });
 
             modelBuilder.Entity("Cinemagic.Models.StripeEvent", b =>
@@ -492,26 +612,23 @@ namespace Cinemagic.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Cinemagic.Models.Wishlist", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "ProductId");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Wishlists");
                 });
@@ -561,6 +678,25 @@ namespace Cinemagic.Migrations
                     b.Navigation("Screening");
                 });
 
+            modelBuilder.Entity("Cinemagic.Models.FilmCast", b =>
+                {
+                    b.HasOne("Cinemagic.Models.Person", "Person")
+                        .WithMany("CastRoles")
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cinemagic.Models.FilmDetails", "FilmDetails")
+                        .WithMany("CastMembers")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FilmDetails");
+
+                    b.Navigation("Person");
+                });
+
             modelBuilder.Entity("Cinemagic.Models.FilmDetails", b =>
                 {
                     b.HasOne("Cinemagic.Models.Product", "Product")
@@ -572,12 +708,50 @@ namespace Cinemagic.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("Cinemagic.Models.FilmDirector", b =>
+                {
+                    b.HasOne("Cinemagic.Models.Person", "Person")
+                        .WithMany("DirectedFilms")
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cinemagic.Models.FilmDetails", "FilmDetails")
+                        .WithMany("Directors")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FilmDetails");
+
+                    b.Navigation("Person");
+                });
+
+            modelBuilder.Entity("Cinemagic.Models.FilmGenre", b =>
+                {
+                    b.HasOne("Cinemagic.Models.Genre", "Genre")
+                        .WithMany("FilmGenres")
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cinemagic.Models.FilmDetails", "FilmDetails")
+                        .WithMany("FilmGenres")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FilmDetails");
+
+                    b.Navigation("Genre");
+                });
+
             modelBuilder.Entity("Cinemagic.Models.Order", b =>
                 {
                     b.HasOne("Cinemagic.Models.DeliveryMethod", "DeliveryMethod")
                         .WithMany("Orders")
                         .HasForeignKey("DeliveryMethodId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Cinemagic.Models.DiscountCode", "DiscountCode")
@@ -587,7 +761,7 @@ namespace Cinemagic.Migrations
                     b.HasOne("Cinemagic.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("DeliveryMethod");
@@ -607,11 +781,13 @@ namespace Cinemagic.Migrations
 
                     b.HasOne("Cinemagic.Models.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Cinemagic.Models.Screening", "Screening")
                         .WithMany()
-                        .HasForeignKey("ScreeningId");
+                        .HasForeignKey("ScreeningId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Order");
 
@@ -724,11 +900,32 @@ namespace Cinemagic.Migrations
                     b.Navigation("Orders");
                 });
 
+            modelBuilder.Entity("Cinemagic.Models.FilmDetails", b =>
+                {
+                    b.Navigation("CastMembers");
+
+                    b.Navigation("Directors");
+
+                    b.Navigation("FilmGenres");
+                });
+
+            modelBuilder.Entity("Cinemagic.Models.Genre", b =>
+                {
+                    b.Navigation("FilmGenres");
+                });
+
             modelBuilder.Entity("Cinemagic.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
 
                     b.Navigation("StripeEvents");
+                });
+
+            modelBuilder.Entity("Cinemagic.Models.Person", b =>
+                {
+                    b.Navigation("CastRoles");
+
+                    b.Navigation("DirectedFilms");
                 });
 
             modelBuilder.Entity("Cinemagic.Models.Product", b =>

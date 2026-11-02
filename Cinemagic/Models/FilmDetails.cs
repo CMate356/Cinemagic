@@ -11,11 +11,13 @@ namespace Cinemagic.Models
 
         public int DurationMinutes { get; set; }
         public DateTime ReleaseDate { get; set; }
-        public string Agerating { get; set; } = string.Empty;
-        public string Genre { get; set; } = string.Empty;
-        public string Director { get; set; } = string.Empty;
-        public string Cast { get; set; } = string.Empty;
+        public string AgeRating { get; set; } = string.Empty;
         public string OriginalTitle { get; set; } = string.Empty;
         public string TrailerUrl { get; set; } = string.Empty;
+
+        // Genurile, actorii si regizorii sunt i ntabele separate
+        public ICollection<FilmGenre> FilmGenres { get; set; } = new List<FilmGenre>();
+        public ICollection<FilmCast> CastMembers { get; set; } = new List<FilmCast>();
+        public ICollection<FilmDirector> Directors { get; set; } = new List<FilmDirector>();
     }
 }
