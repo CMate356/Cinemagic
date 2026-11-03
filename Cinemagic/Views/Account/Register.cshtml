@@ -1,0 +1,49 @@
+﻿@model Cinemagic.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Înregistrare";
+}
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <h2 class="brand-title">Creează Cont</h2>
+        
+        <form asp-action="Register" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label text-gold">Nume Complet</label>
+                <input asp-for="FullName" class="form-control" placeholder="ex: Popescu Maria" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label text-gold">Adresă Email</label>
+                <input asp-for="Email" class="form-control" placeholder="nume@exemplu.com" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label text-gold">Parolă</label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Cel puțin 6 caractere" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ConfirmPassword" class="form-label text-gold">Confirmă Parola</label>
+                <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Reintrodu parola" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-gold w-100 py-2 mt-3">Înregistrează-te</button>
+        </form>
+
+        <div class="text-center mt-3">
+            <p class="text-muted">Ai deja cont? <a asp-action="Login" class="text-gold text-decoration-none">Autentifică-te aici</a></p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
