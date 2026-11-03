@@ -82,3 +82,35 @@ h1, h2, h3, .brand-title {
         color: var(--text-primary);
         box-shadow: 0 0 0 0.25rem rgba(243, 186, 66, 0.25);
     }
+
+
+.auth-wrapper {
+    min-height: 75vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-gold);
+    border-radius: 12px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    color: var(--text-primary);
+    width: 100%;
+    max-width: 450px;
+}
+
+.brand-title {
+    color: var(--text-gold);
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.navbar-brand-custom {
+    color: var(--text-gold) !important;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
