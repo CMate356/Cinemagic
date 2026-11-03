@@ -3,11 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cinemagic.Models
 {
+    // Tabel de legatura User <-> Product, cu cheie compusa (UserId, ProductId)
     public class Wishlist
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         public int UserId { get; set; }
         [ForeignKey("UserId")]
