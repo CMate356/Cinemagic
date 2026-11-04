@@ -1,0 +1,40 @@
+﻿@model AddressInputViewModel
+@{
+    ViewData["Title"] = "Adresă nouă";
+}
+
+<h1 class="h3 mb-3" style="color:#d4af37;">Adresă nouă</h1>
+
+<form asp-action="Create" method="post">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label asp-for="Street" class="form-label">Strada și numărul</label>
+            <input asp-for="Street" class="form-control" />
+            <span asp-validation-for="Street" class="text-danger"></span>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="City" class="form-label">Orașul</label>
+            <input asp-for="City" class="form-control" />
+            <span asp-validation-for="City" class="text-danger"></span>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="Phone" class="form-label">Telefon</label>
+            <input asp-for="Phone" class="form-control" />
+            <span asp-validation-for="Phone" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-check mt-3">
+        <input asp-for="MakeDefault" class="form-check-input" />
+        <label asp-for="MakeDefault" class="form-check-label">Folosește ca adresă implicită</label>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+        <a asp-action="Index" class="btn btn-outline-light">Înapoi</a>
+        <button type="submit" class="btn px-4" style="background-color:#d4af37;color:#000;font-weight:600;">Salvează</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
