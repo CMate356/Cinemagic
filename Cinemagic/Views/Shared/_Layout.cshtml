@@ -12,43 +12,71 @@
 <body class="d-flex flex-column min-vh-100">
 
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-3 bg-card border-gold-custom">
+        <nav class="navbar navbar-expand-lg navbar-dark border-bottom box-shadow mb-3 bg-card border-gold-custom px-4 py-3">
             <div class="container-fluid">
-                <a class="navbar-brand brand-title m-0" asp-area="" asp-controller="Home" asp-action="Index">CINEMAGIC</a>
-                <button class="navbar-toggler border-gold" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <!-- Logo -->
+                <a class="navbar-brand brand-title m-0 d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="text-gold" style="font-size: 1.2rem;">+</span> CINEMAGIC
+                </a>
+
+                <!-- Choose Cinema Dropdown -->
+                <div class="dropdown ms-3">
+                    <button class="btn btn-sm btn-gold dropdown-toggle d-flex align-items-center gap-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Choose cinema
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" asp-controller="Home" asp-action="Index">Cinemagic Bucharest</a></li>
+                        <li><a class="dropdown-item" asp-controller="Home" asp-action="Index">Cinemagic Cluj</a></li>
+                        <li><a class="dropdown-item" asp-controller="Home" asp-action="Index">Cinemagic Iasi</a></li>
+                    </ul>
+                </div>
+
+                <button class="navbar-toggler border-gold" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbarContent" aria-controls="mainNavbarContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Acasă</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Confidențialitate</a>
-                        </li>
-                    </ul>
 
-                    <!-- Secțiunea de Autentificare din Navbar -->
-                    <ul class="navbar-nav ms-auto align-items-center">
+                <div class="collapse navbar-collapse" id="mainNavbarContent">
+                    <!-- Search Movies Bar -->
+                    <form class="d-flex mx-auto my-2 my-lg-0" style="width: 700px;" method="get" asp-controller="Films" asp-action="Index">
+                        <input class="form-control form-control-sm bg-dark text-light border-secondary" type="search" name="search" placeholder="Search movies..." aria-label="Search" autocomplete="off">
+                    </form>
+
+                    <!-- Meniul principal & Autentificarea -->
+                    <ul class="navbar-nav ms-auto align-items-center gap-3">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-controller="Films" asp-action="Index">Filme</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-controller="Products" asp-action="Category" asp-route-id="Snacks">Snacks</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-controller="Products" asp-action="Category" asp-route-id="Merch">Merch</a>
+                        </li>
+
+                        <!-- Cart Button -->
+                        <li class="nav-item">
+                            <a class="btn btn-outline-gold btn-sm px-3" asp-controller="Cart" asp-action="Index">
+                                Cart (0)
+                            </a>
+                        </li>
+
+                        <!-- Secțiunea de Autentificare -->
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item me-3">
+                            <li class="nav-item">
                                 <span class="nav-link text-gold">Salut, @User.Identity.Name!</span>
                             </li>
                             <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline m-0">
                                     <button type="submit" class="btn btn-outline-gold btn-sm px-3">Deconectare</button>
                                 </form>
                             </li>
                         }
                         else
                         {
-                            <li class="nav-item me-2">
-                                <a class="nav-link text-light" asp-controller="Account" asp-action="Login">Autentificare</a>
-                            </li>
                             <li class="nav-item">
-                                <a class="btn btn-gold btn-sm px-3" asp-controller="Account" asp-action="Register">Înregistrare</a>
+                                <a class="btn btn-gold btn-sm px-3 text-dark fw-bold" asp-controller="Account" asp-action="Login">Account</a>
                             </li>
                         }
                     </ul>

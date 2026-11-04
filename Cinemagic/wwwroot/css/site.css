@@ -5,7 +5,7 @@
     --bg-input: #101422;
    
     --text-primary: #ffffff;
-    --text-muted: #8c94a8;
+    --text-muted: #d9a232;
     --text-gold: #f3ba42;
     
     --accent-gold: #f3ba42;
@@ -83,6 +83,10 @@ h1, h2, h3, .brand-title {
         box-shadow: 0 0 0 0.25rem rgba(243, 186, 66, 0.25);
     }
 
+    .form-control::placeholder,
+    .form-select::placeholder {
+        color: rgba(243, 186, 66, 0.25) 
+      }
 
 .auth-wrapper {
     min-height: 75vh;
@@ -113,4 +117,42 @@ h1, h2, h3, .brand-title {
     color: var(--text-gold) !important;
     font-weight: 700;
     letter-spacing: 1px;
+}
+
+.cinema-hero {
+    position: relative;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}
+
+.cinema-search {
+    max-width: 500px;
+    width: 100%;
+}
+
+.cinema-card {
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+    .cinema-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--accent-gold);
+    }
+
+    .cinema-card.is-selected {
+        border: 2px solid var(--accent-gold);
+        box-shadow: 0 0 15px rgba(243, 186, 66, 0.2);
+    }
+
+.cinema-pin {
+    color: var(--text-gold);
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.text-muted-custom {
+    color: #9ca3af !important; 
 }

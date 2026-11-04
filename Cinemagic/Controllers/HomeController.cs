@@ -1,25 +1,27 @@
-using Cinemagic.Models;
+using Cinemagic.Infrastructure;
+using Cinemagic.Services;
+using Cinemagic.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
-namespace Cinemagic.Controllers
+namespace Cinemagic.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private readonly ICinemaService _cinemas;
+
+    public HomeController(ICinemaService cinemas) => _cinemas = cinemas;
+
+    // GET /  or  /?q=cluj
+    [HttpGet]
+    public async Task<IActionResult> Index(string? q)
     {
-        public IActionResult Index()
+        var model = new CinemaSelectionViewModel
         {
-            return View();
-        }
+            Query = q,
+            SelectedCinemaId = SelectedCinema.Get(Request),
+            Cinemas = (await _cinemas.SearchAsync(q)).ToList()
+        };
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        return View(model);
     }
 }
