@@ -65,7 +65,10 @@
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <span class="nav-link text-gold">Salut, @User.Identity.Name!</span>
+                                <span class="nav-link text-gold">Salut, @(User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value ?? User.Identity.Name)!</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-controller="Addresses" asp-action="Index">Adresele mele</a>
                             </li>
                             <li class="nav-item">
                                 <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline m-0">
