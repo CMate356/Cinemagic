@@ -19,15 +19,15 @@
                     <span class="text-gold" style="font-size: 1.2rem;">+</span> CINEMAGIC
                 </a>
 
-                <!-- Choose Cinema Dropdown -->
+              <!-- Choose Cinema Dropdown -->
                 <div class="dropdown ms-3">
                     <button class="btn btn-sm btn-gold dropdown-toggle d-flex align-items-center gap-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Choose cinema
+                           Choose cinema
                     </button>
                     <ul class="dropdown-menu dropdown-menu-dark">
-                        <li><a class="dropdown-item" asp-controller="Home" asp-action="Index">Cinemagic Bucharest</a></li>
-                        <li><a class="dropdown-item" asp-controller="Home" asp-action="Index">Cinemagic Cluj</a></li>
-                        <li><a class="dropdown-item" asp-controller="Home" asp-action="Index">Cinemagic Iasi</a></li>
+                        <li><a class="dropdown-item" asp-controller="Films" asp-action="SelectCinema" asp-route-name="Bucharest">Cinemagic Bucharest</a></li>
+                        <li><a class="dropdown-item" asp-controller="Films" asp-action="SelectCinema" asp-route-name="Cluj">Cinemagic Cluj</a></li>
+                        <li><a class="dropdown-item" asp-controller="Films" asp-action="SelectCinema" asp-route-name="Iasi">Cinemagic Iasi</a></li>
                     </ul>
                 </div>
 
@@ -86,6 +86,14 @@
     </header>
 
     <div class="container flex-grow-1">
+        @if (TempData["WarningMessage"] != null)
+        {
+            <div class="alert alert-warning bg-dark text-gold border-gold alert-dismissible fade show mb-4" role="alert">
+                @TempData["WarningMessage"]
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

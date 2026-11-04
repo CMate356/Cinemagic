@@ -121,8 +121,18 @@ h1, h2, h3, .brand-title {
 
 .cinema-hero {
     position: relative;
-    padding-top: 2rem;
-    padding-bottom: 3rem;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    background-image: linear-gradient(rgba(15, 17, 23, 0.55), rgba(15, 17, 23, 0.55)), url('/images/cinema-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: calc(100vh - 150px);
+    display: flex;
+    align-items: center;
 }
 
 .cinema-search {

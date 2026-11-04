@@ -5,57 +5,41 @@ namespace Cinemagic.Data
     public static class DbSeeder
     {
         private sealed record FilmSeed(string Title, string Description, int Minutes, DateTime Release,
-            string Rating, string[] Genres, string Director, string[] Cast, decimal Price);
+            string Rating, string[] Genres, string Director, string[] Cast, decimal Price, string ImageURL);
 
         public static void Seed(ApplicationDbContext db)
         {
-            if (db.Categories.Any()) return; // baza este deja populata
+            if (db.Categories.Any()) return; 
 
-            //  Categorii
+            // Categories
             var catTickets = new Category { Name = "Movie Tickets", Description = "Tickets for screenings in our cinemas." };
             var catVideo = new Category { Name = "Home Video", Description = "Blu-ray and DVD editions." };
             var catMerch = new Category { Name = "Merch", Description = "Posters, mugs, bags and collectibles." };
             var catSnacks = new Category { Name = "Snacks & Gift Cards", Description = "Popcorn, drinks and gift cards." };
 
-            // Genuri 
-            var genres = new[] { "Thriller", "Mystery", "Drama", "Adventure", "Sci-Fi", "Action",
-                                 "Comedy", "Romance", "Family", "Horror", "Animation" }
-                .Select(n => new Genre { Name = n }).ToDictionary(g => g.Name);
+            // Genres
+            var genreNames = new[] { "Thriller", "Mystery", "Drama", "Adventure", "Sci-Fi", "Action", "Comedy", "Romance", "Family", "Horror", "Animation" };
+            var genres = genreNames.Select(n => new Genre { Name = n }).ToDictionary(g => g.Name);
 
-            // Persoane (nume inventate) 
+            // People
             var people = new[] { "Ilinca Ardeleanu", "Matei Corbea", "Sofia Lazarescu", "Darius Vlaicu",
                                  "Anca Dobrescu", "Victor Nanu", "Larisa Preda", "Cosmin Ghergut",
                                  "Medeea Stoenescu", "Rares Toma", "Ioana Balan", "Adrian Mocanu",
                                  "Teodora Rusu", "Gabriel Enache", "Alina Ciobanu", "Paul Dragoi" }
                 .Select(n => new Person { FullName = n }).ToDictionary(p => p.FullName);
 
-            // Filme (fictive)
+            // Movie Catalog
             var films = new[]
             {
-                new FilmSeed("Midnight Lantern", "A night-shift archivist finds a case file that was never closed.", 118,
-                    new DateTime(2026, 2, 13), "N-15", new[] { "Thriller", "Mystery" }, "Ilinca Ardeleanu",
-                    new[] { "Anca Dobrescu", "Victor Nanu", "Larisa Preda" }, 34.90m),
-                new FilmSeed("The Last Lighthouse", "A keeper and a stranded sailor face one last storm.", 132,
-                    new DateTime(2025, 11, 21), "AP-12", new[] { "Drama", "Adventure" }, "Matei Corbea",
-                    new[] { "Cosmin Ghergut", "Medeea Stoenescu", "Rares Toma" }, 32.90m),
-                new FilmSeed("Neon Horizons", "A courier crosses a city that never switches off its lights.", 124,
-                    new DateTime(2026, 3, 27), "N-15", new[] { "Sci-Fi", "Action" }, "Darius Vlaicu",
-                    new[] { "Ioana Balan", "Adrian Mocanu", "Victor Nanu" }, 36.90m),
-                new FilmSeed("Paper Moon Bakery", "Two rival bakers are forced to share one tiny kitchen.", 101,
-                    new DateTime(2026, 1, 9), "AG", new[] { "Comedy", "Romance" }, "Sofia Lazarescu",
-                    new[] { "Teodora Rusu", "Gabriel Enache", "Anca Dobrescu" }, 29.90m),
-                new FilmSeed("Echoes of Saltwater", "A family returns to a seaside town to sell the old house.", 109,
-                    new DateTime(2025, 10, 17), "AP-12", new[] { "Drama" }, "Matei Corbea",
-                    new[] { "Alina Ciobanu", "Paul Dragoi", "Larisa Preda" }, 29.90m),
-                new FilmSeed("Operation Pigeon", "A clumsy pigeon and three kids foil a museum heist.", 95,
-                    new DateTime(2026, 4, 10), "AG", new[] { "Comedy", "Family" }, "Sofia Lazarescu",
-                    new[] { "Gabriel Enache", "Medeea Stoenescu", "Rares Toma" }, 27.90m),
-                new FilmSeed("Crimson Static", "A radio host starts hearing a broadcast from tomorrow.", 104,
-                    new DateTime(2026, 3, 6), "IM-18", new[] { "Horror", "Thriller" }, "Ilinca Ardeleanu",
-                    new[] { "Larisa Preda", "Cosmin Ghergut", "Alina Ciobanu" }, 34.90m),
-                new FilmSeed("Atlas of Small Wonders", "A tiny cartographer maps the world inside a garden.", 92,
-                    new DateTime(2026, 2, 20), "AG", new[] { "Animation", "Family" }, "Darius Vlaicu",
-                    new[] { "Ioana Balan", "Paul Dragoi", "Teodora Rusu" }, 27.90m),
+                new FilmSeed("Baiat de Milioane", "A comedy full of twists and hearty humor.", 100, new DateTime(2026, 2, 13), "AP-12", new[] { "Comedy" }, "Ilinca Ardeleanu", new[] { "Anca Dobrescu", "Victor Nanu", "Larisa Preda" }, 34.90m, "/images/Baiat_de_milioane.jpg"),
+                new FilmSeed("Other Mommy", "A dark psychological thriller that tests the limits of your courage.", 93, new DateTime(2025, 11, 21), "N-15", new[] { "Horror", "Thriller" }, "Matei Corbea", new[] { "Cosmin Ghergut", "Medeea Stoenescu", "Rares Toma" }, 32.90m, "/images/Cealalta_Mama.jpg"),
+                new FilmSeed("Clayface", "Intense action and mystery in an unforgiving metropolis.", 105, new DateTime(2026, 3, 27), "N-15", new[] { "Action", "Horror", "Thriller" }, "Darius Vlaicu", new[] { "Ioana Balan", "Adrian Mocanu", "Victor Nanu" }, 36.90m, "/images/Clayface.jpg"),
+                new FilmSeed("Nightborn", "A mysterious drama about old secrets and shadows from the past.", 92, new DateTime(2026, 1, 9), "IM-18", new[] { "Drama", "Horror" }, "Sofia Lazarescu", new[] { "Teodora Rusu", "Gabriel Enache", "Anca Dobrescu" }, 29.90m, "/images/Copilul_Noptii.jpg"),
+                new FilmSeed("Craciun Amar", "A touching drama about family, choices, and forgiveness.", 111, new DateTime(2025, 10, 17), "AP-12", new[] { "Drama" }, "Matei Corbea", new[] { "Alina Ciobanu", "Paul Dragoi", "Larisa Preda" }, 29.90m, "/images/Craciun_Amar.jpg"),
+                new FilmSeed("Primetime", "A captivating dive into the backstage of mass media and justice.", 110, new DateTime(2026, 4, 10), "N-15", new[] { "Action", "Drama" }, "Sofia Lazarescu", new[] { "Gabriel Enache", "Medeea Stoenescu", "Rares Toma" }, 27.90m, "/images/Primetime.jpg"),
+                new FilmSeed("Ratiune si Simtire", "A classic tale of love and drama in a spectacular setting.", 131, new DateTime(2026, 3, 6), "AP-12", new[] { "Drama", "Romance" }, "Ilinca Ardeleanu", new[] { "Larisa Preda", "Cosmin Ghergut", "Alina Ciobanu" }, 34.90m, "/images/Ratiune_si_Simtire.jpg"),
+                new FilmSeed("Forgotten Island", "An unforgettable animated adventure for all kids and the whole family.", 109, new DateTime(2026, 2, 20), "AG", new[] { "Animation", "Family", "Adventure" }, "Darius Vlaicu", new[] { "Ioana Balan", "Paul Dragoi", "Teodora Rusu" }, 27.90m, "/images/Insula_Pierduta.jpg"),
+                new FilmSeed("Delta Salbatica", "A fascinating documentary about the nature and wildlife of the Danube Delta.", 105, new DateTime(2026, 5, 12), "AG", new[] { "Adventure", "Family" }, "Darius Vlaicu", new[] { "Victor Nanu", "Ioana Balan", "Rares Toma" }, 28.90m, "/images/Delta_Salbatica.jpg")
             };
 
             var filmProducts = new List<Product>();
@@ -80,14 +64,14 @@ namespace Cinemagic.Data
                     Category = catTickets,
                     Title = f.Title,
                     Description = f.Description,
-                    Price = f.Price,          // pret "de la"; pretul biletului este in Screening.Price
-                    ImageUrl = Img(f.Title, 600, 900),
-                    StockQuantity = 0,        // locurile sunt in Screening.AvailableSeats
+                    Price = f.Price,
+                    ImageUrl = f.ImageURL,
+                    StockQuantity = 0,
                     FilmDetails = details
                 });
             }
 
-            //  Produse non-film 
+            // Non-film products
             Product Item(Category c, string title, string desc, decimal price, int stock) => new Product
             {
                 Category = c,
@@ -102,21 +86,16 @@ namespace Cinemagic.Data
             for (int i = 0; i < films.Length; i++)
             {
                 string kind = i % 2 == 0 ? "Blu-ray" : "DVD";
-                video.Add(Item(catVideo, films[i].Title + " – " + kind,
-                    kind + " edition of " + films[i].Title + ".",
-                    i % 2 == 0 ? 69.90m : 44.90m, 10 + i * 3));
+                video.Add(Item(catVideo, films[i].Title + " – " + kind, kind + " edition of " + films[i].Title + ".", i % 2 == 0 ? 69.90m : 44.90m, 10 + i * 3));
             }
 
             var merch = new List<Product>
             {
                 Item(catMerch, "Neon Horizons Poster A2", "Large format poster.", 39.90m, 40),
-                Item(catMerch, "Midnight Lantern Poster A2", "Large format poster.", 39.90m, 35),
                 Item(catMerch, "Cinemagic Tote Bag", "Cotton tote bag with the Cinemagic logo.", 44.90m, 50),
                 Item(catMerch, "Film Reel Mug", "Ceramic mug, 330 ml.", 34.90m, 60),
-                Item(catMerch, "Enamel Pin Set (5 pcs)", "Five collectible film-themed pins.", 29.90m, 45),
                 Item(catMerch, "Clapperboard Notebook", "A5 notebook with a clapperboard cover.", 24.90m, 70),
-                Item(catMerch, "Cinemagic T-Shirt", "Unisex cotton t-shirt.", 59.90m, 30),
-                Item(catMerch, "Film Strip Keychain", "Metal keychain shaped like a film strip.", 14.90m, 100),
+                Item(catMerch, "Cinemagic T-Shirt", "Unisex cotton t-shirt.", 59.90m, 30)
             };
 
             var snacks = new List<Product>
@@ -126,88 +105,99 @@ namespace Cinemagic.Data
                 Item(catSnacks, "Popcorn – Large", "Salted popcorn, large box.", 24.90m, 200),
                 Item(catSnacks, "Nachos with Cheese", "Nachos with warm cheese sauce.", 22.90m, 150),
                 Item(catSnacks, "Soft Drink 0.5 L", "Cold soft drink.", 9.90m, 300),
-                Item(catSnacks, "Cinema Combo", "Medium popcorn and a soft drink.", 27.90m, 150),
-                Item(catSnacks, "Gift Card 50 RON", "Gift card worth 50 RON.", 50.00m, 500),
-                Item(catSnacks, "Gift Card 100 RON", "Gift card worth 100 RON.", 100.00m, 500),
+                Item(catSnacks, "Cinema Combo", "Medium popcorn and a soft drink.", 27.90m, 150)
             };
 
-            //  Cinematografe
+            // Cinemas
             var cinemas = new[]
             {
                 new Cinema { Name = "Cinemagic Bucharest", City = "Bucharest", Address = "Bd. Exemplu 10" },
                 new Cinema { Name = "Cinemagic Cluj", City = "Cluj-Napoca", Address = "Str. Exemplu 25" },
-                new Cinema { Name = "Cinemagic Iasi", City = "Iași", Address = "Str. Exemplu 7" },
+                new Cinema { Name = "Cinemagic Iasi", City = "Iași", Address = "Str. Exemplu 7" }
             };
 
-            //  Proiectii (urmatoarele 7 zile) 
+            // Generate screenings
             var rng = new Random(42);
             var formats = new[] { "2D", "3D", "VIP 2D" };
-            var languages = new[] { "Original, subtitled", "Dubbed (RO)" };
-            var hours = new[] { 14, 16, 18, 20, 22 };
+            var languages = new[] { "Original, subtitled", "Dubbed (RO)", "English" };
             var seatOptions = new[] { 80, 120, 150 };
             var screenings = new List<Screening>();
-            for (int i = 0; i < filmProducts.Count; i++)
+
+            for (int day = 0; day < 14; day++)
             {
-                for (int s = 0; s < 3; s++)
+                var targetDate = DateTime.Today.AddDays(day);
+
+                foreach (var cinema in cinemas)
                 {
-                    string format = formats[(i + s) % formats.Length];
-                    decimal extra = format == "VIP 2D" ? 15m : format == "3D" ? 5m : 0m;
-                    int total = seatOptions[rng.Next(seatOptions.Length)];
-                    screenings.Add(new Screening
+                    for (int i = 0; i < filmProducts.Count; i++)
                     {
-                        Product = filmProducts[i],
-                        Cinema = cinemas[(i + s) % cinemas.Length],
-                        StartTime = DateTime.Today.AddDays(1 + (i + s) % 7).AddHours(hours[(i * 3 + s) % hours.Length]),
-                        Format = format,
-                        Language = languages[(i + s) % languages.Length],
-                        Price = filmProducts[i].Price + extra,
-                        TotalSeats = total,
-                        AvailableSeats = total
-                    });
+                        var film = filmProducts[i];
+                        bool isKidsFilm = film.Title == "The Lost Island" || film.Title == "Wild Delta";
+
+                        List<int> scheduledHours = new List<int>();
+
+                        if (isKidsFilm)
+                        {
+                            // Kids matinee (morning)
+                            scheduledHours.Add(11 + ((day + i) % 2));
+                            if ((day + i) % 2 == 0) scheduledHours.Add(14);
+                        }
+                        else
+                        {
+                            // General movies (afternoon / evening)
+                            int baseHour = 15 + ((i + day + cinema.Name.Length) % 6);
+                            scheduledHours.Add(baseHour);
+
+                            if ((i + day) % 2 == 0)
+                            {
+                                int lateHour = baseHour + 3 > 22 ? 22 : baseHour + 3;
+                                if (!scheduledHours.Contains(lateHour)) scheduledHours.Add(lateHour);
+                            }
+                        }
+
+                        foreach (var hour in scheduledHours)
+                        {
+                            string format = isKidsFilm ? "2D" : formats[(i + day + hour) % formats.Length];
+                            decimal extra = format == "VIP 2D" ? 15m : format == "3D" ? 5m : 0m;
+                            int totalSeats = seatOptions[rng.Next(seatOptions.Length)];
+                            string lang = isKidsFilm ? "Dubbed (RO)" : languages[(i + day) % languages.Length];
+
+                            screenings.Add(new Screening
+                            {
+                                Product = film,
+                                Cinema = cinema,
+                                StartTime = targetDate.AddHours(hour).AddMinutes((i * 15) % 60),
+                                Format = format,
+                                Language = lang,
+                                Price = film.Price + extra,
+                                TotalSeats = totalSeats,
+                                AvailableSeats = totalSeats
+                            });
+                        }
+                    }
                 }
             }
 
-            //  Livrare si coduri de reducere 
+            // Delivery and discount codes
             var delivery = new List<DeliveryMethod>
             {
                 new DeliveryMethod { Name = "Courier Standard (2-3 days)", Cost = 19.99m },
                 new DeliveryMethod { Name = "Courier Express (next day)", Cost = 34.99m },
                 new DeliveryMethod { Name = "E-ticket by email", Cost = 0m },
-                new DeliveryMethod { Name = "Box-office pickup", Cost = 0m },
+                new DeliveryMethod { Name = "Box-office pickup", Cost = 0m }
             };
+
             var discounts = new List<DiscountCode>
             {
                 new DiscountCode { Code = "WELCOME10", Type = "Percentage", Value = 10m, ExpiresAt = DateTime.Today.AddDays(90), MaxUses = 100, UsedCount = 0 },
-                new DiscountCode { Code = "SAVE5", Type = "Fixed", Value = 5m, ExpiresAt = DateTime.Today.AddDays(30), MaxUses = 50, UsedCount = 0 },
-                new DiscountCode { Code = "EXPIRED5", Type = "Fixed", Value = 5m, ExpiresAt = DateTime.Today.AddDays(-1), MaxUses = 50, UsedCount = 0 },
-                new DiscountCode { Code = "USEDUP", Type = "Percentage", Value = 15m, ExpiresAt = DateTime.Today.AddDays(30), MaxUses = 1, UsedCount = 1 },
+                new DiscountCode { Code = "SAVE5", Type = "Fixed", Value = 5m, ExpiresAt = DateTime.Today.AddDays(30), MaxUses = 50, UsedCount = 0 }
             };
 
-            //  Utilizatori de test 
-            var admin = new User
-            {
-                Email = "admin@cinemagic.local",
-                FullName = "Admin Cinemagic",
-                Role = "Admin",
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!")
-            };
-            var customer = new User
-            {
-                Email = "customer@cinemagic.local",
-                FullName = "Test Customer",
-                Role = "Customer",
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Customer123!")
-            };
-            var address = new Address
-            {
-                User = customer,
-                Street = "Str. Exemplu 12",
-                City = "Bucharest",
-                Phone = "0712345678",
-                IsDefault = true
-            };
+            // Demo users
+            var admin = new User { Email = "admin@cinemagic.local", FullName = "Admin Cinemagic", Role = "Admin", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!") };
+            var customer = new User { Email = "customer@cinemagic.local", FullName = "Test Customer", Role = "Customer", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Customer123!") };
+            var address = new Address { User = customer, Street = "Str. Exemplu 12", City = "Bucharest", Phone = "0712345678", IsDefault = true };
 
-            //  O comanda demo, o recenzie si un element in wishlist 
             var boughtProduct = video[0];
             var demoOrder = new Order
             {
@@ -223,24 +213,12 @@ namespace Cinemagic.Data
                 DiscountAmount = 0m,
                 StripeSessionId = "cs_test_seed_0001"
             };
-            demoOrder.OrderItems.Add(new OrderItem
-            {
-                Product = boughtProduct,
-                Quantity = 1,
-                UnitPrice = boughtProduct.Price
-            });
-            boughtProduct.StockQuantity -= 1;
+            demoOrder.OrderItems.Add(new OrderItem { Product = boughtProduct, Quantity = 1, UnitPrice = boughtProduct.Price });
 
-            var review = new Review
-            {
-                User = customer,
-                Product = boughtProduct,
-                Rating = 5,
-                Comment = "Great edition, fast delivery."
-            };
+            var review = new Review { User = customer, Product = boughtProduct, Rating = 5, Comment = "Great edition, fast delivery." };
             var wish = new Wishlist { User = customer, Product = filmProducts[0] };
 
-            // Salvare 
+            // Save to DB
             db.Products.AddRange(filmProducts);
             db.Products.AddRange(video);
             db.Products.AddRange(merch);
@@ -259,7 +237,6 @@ namespace Cinemagic.Data
         private static string Slug(string s) =>
             new string(s.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-').ToArray()).Trim('-');
 
-        
         private static string Img(string title, int w, int h) =>
             $"https://picsum.photos/seed/{Slug(title)}/{w}/{h}";
     }
