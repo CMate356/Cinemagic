@@ -72,14 +72,14 @@ namespace Cinemagic.Data
             }
 
             // Non-film products
-            Product Item(Category c, string title, string desc, decimal price, int stock) => new Product
+            Product Item(Category c, string title, string desc, decimal price, int stock, string imageURL = null) => new Product
             {
                 Category = c,
                 Title = title,
                 Description = desc,
                 Price = price,
                 StockQuantity = stock,
-                ImageUrl = Img(title, 600, 600)
+                ImageUrl = imageURL ?? Img(title, 600, 600)
             };
 
             var video = new List<Product>();
@@ -91,21 +91,26 @@ namespace Cinemagic.Data
 
             var merch = new List<Product>
             {
-                Item(catMerch, "Neon Horizons Poster A2", "Large format poster.", 39.90m, 40),
-                Item(catMerch, "Cinemagic Tote Bag", "Cotton tote bag with the Cinemagic logo.", 44.90m, 50),
-                Item(catMerch, "Film Reel Mug", "Ceramic mug, 330 ml.", 34.90m, 60),
-                Item(catMerch, "Clapperboard Notebook", "A5 notebook with a clapperboard cover.", 24.90m, 70),
-                Item(catMerch, "Cinemagic T-Shirt", "Unisex cotton t-shirt.", 59.90m, 30)
+                Item(catMerch, "Neon Horizons Poster A2", "Large format poster.", 39.90m, 40, "/images/Poster.png"),
+                Item(catMerch, "Cinemagic Tote Bag", "Cotton tote bag with the Cinemagic logo.", 44.90m, 50, "/images/totebag.png"),
+                Item(catMerch, "Film Reel Mug", "Ceramic mug, 330 ml.", 34.90m, 60, "/images/mug.png"),
+                Item(catMerch, "Clapperboard Notebook", "A5 notebook with a clapperboard cover.", 24.90m, 70, "/images/notebook.png"),
+                Item(catMerch, "Cinemagic T-Shirt", "Unisex cotton t-shirt.", 59.90m, 30, "/images/t-shirt.png")
             };
 
             var snacks = new List<Product>
             {
-                Item(catSnacks, "Popcorn – Small", "Salted popcorn, small box.", 14.90m, 200),
-                Item(catSnacks, "Popcorn – Medium", "Salted popcorn, medium box.", 19.90m, 200),
-                Item(catSnacks, "Popcorn – Large", "Salted popcorn, large box.", 24.90m, 200),
-                Item(catSnacks, "Nachos with Cheese", "Nachos with warm cheese sauce.", 22.90m, 150),
-                Item(catSnacks, "Soft Drink 0.5 L", "Cold soft drink.", 9.90m, 300),
-                Item(catSnacks, "Cinema Combo", "Medium popcorn and a soft drink.", 27.90m, 150)
+                Item(catSnacks, "Popcorn – Small", "Salted popcorn, small box.", 14.90m, 200,"/images/PopcornS.png" ),
+                Item(catSnacks, "Popcorn – Medium", "Salted popcorn, medium box.", 19.90m, 200, "/images/PopcornM.png"),
+                Item(catSnacks, "Popcorn – Large", "Salted popcorn, large box.", 24.90m, 200, "/images/PopcornL.png"),
+                Item(catSnacks, "Nachos with Cheese", "Nachos with warm cheese sauce.", 22.90m, 150, "/images/Nachos.png"),
+                Item(catSnacks, "Apă Plată 0.5 L", "Still mineral water.", 7.90m, 300, "/images/apa_plata.png"),
+                Item(catSnacks, "Apă Minerală 0.5 L", "Sparkling mineral water.", 7.90m, 300, "/images/apa_minerala.png"),
+                Item(catSnacks, "Cola 0.5 L", "Refreshing cola soft drink.", 9.90m, 300, "/images/cola.png"),
+                Item(catSnacks, "Cola Zero 0.5 L", "Zero sugar cola soft drink.", 9.90m, 300, "/images/cola_zero.png"),
+                Item(catSnacks, "Fanta 0.5 L", "Orange flavored soft drink.", 9.90m, 300, "/images/fanta.png"),
+                Item(catSnacks, "Sprite 0.5 L", "Lemon-lime flavored soft drink.", 9.90m, 300, "/images/sprite.png"),
+                Item(catSnacks, "Cinema Combo", "Medium popcorn and a soft drink.", 27.90m, 150, "/images/Cinema_Combo.png")
             };
 
             // Cinemas
@@ -132,19 +137,22 @@ namespace Cinemagic.Data
                     for (int i = 0; i < filmProducts.Count; i++)
                     {
                         var film = filmProducts[i];
-                        bool isKidsFilm = film.Title == "The Lost Island" || film.Title == "Wild Delta";
+                        var seedData = films[i]; // Luăm datele originale din array-ul de seed
+
+                        // Verificăm automat după genuri (dacă e Animație sau Familie)
+                        bool isKidsFilm = seedData.Genres.Contains("Animation") || seedData.Genres.Contains("Family");
 
                         List<int> scheduledHours = new List<int>();
 
                         if (isKidsFilm)
                         {
-                            // Kids matinee (morning)
-                            scheduledHours.Add(11 + ((day + i) % 2));
-                            if ((day + i) % 2 == 0) scheduledHours.Add(14);
+                            // Matineu copii (dimineața / prânz)
+                            scheduledHours.Add(11 + ((day + i) % 2)); // 11:00 sau 12:00
+                            if ((day + i) % 2 == 0) scheduledHours.Add(14); // 14:00
                         }
                         else
                         {
-                            // General movies (afternoon / evening)
+                            // Filme generale (după-amiază / seară)
                             int baseHour = 15 + ((i + day + cinema.Name.Length) % 6);
                             scheduledHours.Add(baseHour);
 
