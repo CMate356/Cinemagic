@@ -26,6 +26,7 @@ bower_components/
 
 ## Fișiere de configurare sensibile (Cheile API Stripe, Connection Strings locale)
 appsettings.Development.json
+appsettings.json
 .env
 secrets.json
 

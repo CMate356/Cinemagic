@@ -1,0 +1,125 @@
+﻿@model Cinemagic.ViewModels.FilmIndexViewModel
+
+@{
+    ViewData["Title"] = "Program filme";
+    var currentDay = Model.SelectedDate;
+}
+
+<section class="films-hero py-4">
+    <div class="container">
+        <!-- Titlu dinamic cu cinema-ul selectat -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 text-gold font-serif">Program for @Model.SelectedCinema.Name</h1>
+        </div>
+
+        <!-- Zilele săptămânii (Today, Mon, Tue, etc.) -->
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            @for (int i = 0; i < 7; i++)
+            {
+                var day = DateTime.Today.AddDays(i);
+                var isSelected = day.Date == Model.SelectedDate.Date;
+                <a href="@Url.Action("Index", new { date = day.ToString("yyyy-MM-dd"), format = Model.SelectedFormat, search = Model.SearchQuery })"
+                   class="btn @(isSelected ? "btn-gold" : "btn-outline-gold") px-3 py-2">
+                    @if (i == 0)
+                    {
+                        <text>Today</text>
+                    }
+                    else
+                    {
+                        @day.ToString("ddd dd/MM")
+                    }
+                </a>
+            }
+        </div>
+
+        <!-- Filtre (Format și Căutare film) -->
+        <form method="get" class="row g-3 mb-5">
+            <input type="hidden" name="date" value="@Model.SelectedDate.ToString("yyyy-MM-dd")" />
+
+            <div class="col-md-4">
+                <select name="format" class="form-select bg-dark text-light border-secondary" onchange="this.form.submit()">
+                    <option value="">All formats</option>
+                    @foreach (var fmt in Model.AvailableFormats)
+                    {
+                        <option value="@fmt" selected="@(Model.SelectedFormat == fmt)">@fmt</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-5">
+                <input type="text" name="search" value="@Model.SearchQuery" class="form-control bg-dark text-light border-secondary" placeholder="Choose a film..." autocomplete="off" />
+            </div>
+
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-gold w-100">Filter</button>
+            </div>
+        </form>
+
+        <!-- Lista de filme și proiecții -->
+        @if (!Model.Screenings.Any())
+        {
+            <div class="text-center py-5 text-muted-custom">
+                <p>No screenings available for this date and filters.</p>
+            </div>
+        }
+        else
+        {
+            var groupedScreenings = Model.Screenings.GroupBy(s => s.Product);
+
+            <div class="d-flex flex-column gap-4">
+                @foreach (var group in groupedScreenings)
+                {
+                    var film = group.Key;
+                    var details = film.FilmDetails;
+                    var minPrice = group.Min(s => s.Price);
+                    var genresString = details != null && details.FilmGenres.Any()
+                        ? string.Join(", ", details.FilmGenres.Select(fg => fg.Genre.Name))
+                        : "General";
+
+                    <div class="card p-4 border-secondary">
+                        <div class="row align-items-center">
+                            <!-- Poster film -->
+                            <div class="col-md-2 text-center mb-3 mb-md-0">
+                                <img src="@film.ImageUrl" alt="@film.Title" class="img-fluid rounded border border-secondary" style="max-height: 180px; object-fit: cover;" />
+                            </div>
+
+                            <!-- Detalii film -->
+                            <div class="col-md-7">
+                                <h2 class="h4 text-light font-serif mb-2">@film.Title</h2>
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    @if (details != null)
+                                    {
+                                        <span class="badge bg-secondary text-dark fw-bold px-2 py-1">@details.AgeRating</span>
+                                        <span class="text-muted-custom small">@genresString | @details.DurationMinutes min</span>
+                                    }
+                                </div>
+
+                                <!-- Proiecții grupate după format și limbă (AICI ERA EROAREA - adăugat paranteze la foreach) -->
+                                @foreach (var formatGroup in group.GroupBy(s => new { s.Format, s.Language }))
+                                {
+                                    <div class="mb-2">
+                                        <div class="text-gold small fw-semibold mb-1">@formatGroup.Key.Format - @formatGroup.Key.Language</div>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @foreach (var screening in formatGroup.OrderBy(s => s.StartTime))
+                                            {
+                                                <a href="#" class="btn btn-outline-gold btn-sm px-3">
+                                                    @screening.StartTime.ToString("HH:mm")
+                                                </a>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Preț bilet -->
+                            <div class="col-md-3 text-md-end mt-3 mt-md-0">
+                                <div class="text-muted-custom small">Tickets from</div>
+                                <div class="h4 text-gold fw-bold">@minPrice.ToString("0.00") RON</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>

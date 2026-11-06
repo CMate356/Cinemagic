@@ -1,0 +1,123 @@
+﻿@model IEnumerable<Cinemagic.Models.Product>
+
+@{
+    ViewData["Title"] = "Merch";
+}
+
+<div class="container py-5">
+    <!-- Titlu și descriere -->
+    <div class="mb-5">
+        <h1 class="text-light fw-bold mb-2">MERCHANDISE</h1>
+        <p class="text-muted small text-gold">Posters, mugs, bags, and exclusive cinema collectibles.</p>
+    </div>
+
+    <div class="row">
+        <!-- Sidebar Filtre (Stânga) -->
+        <div class="col-lg-3 mb-4">
+            <div class="p-4 rounded bg-card border border-secondary">
+                <h5 class="text-gold mb-3 fw-bold" style="font-size: 0.9rem; letter-spacing: 1px;">FILTERS</h5>
+
+                <form method="get" asp-action="Merch">
+                    <!-- Filtru Categorii Multiple -->
+                    <div class="mb-4">
+                        <label class="form-label text-light small fw-bold">Categories</label>
+
+                        <div class="form-check">
+                            <input class="form-check-input bg-dark border-secondary" type="checkbox" name="categories" value="Movie Tickets" id="catMovies" @(Context.Request.Query["categories"].Contains("Movie Tickets") ? "checked" : "")>
+                            <label class="form-check-label text-light small" for="catMovies">
+                                Movie Tickets
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input bg-dark border-secondary" type="checkbox" name="categories" value="Snacks & Gift Cards" id="catSnacks" @(Context.Request.Query["categories"].Contains("Snacks & Gift Cards") ? "checked" : "")>
+                            <label class="form-check-label text-light small" for="catSnacks">
+                                Snacks & Drinks
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input bg-dark border-secondary" type="checkbox" name="categories" value="Merch" id="catMerch" @(Context.Request.Query["categories"].Count == 0 || Context.Request.Query["categories"].Contains("Merch") ? "checked" : "")>
+                            <label class="form-check-label text-light small" for="catMerch">
+                                Merch
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Filtru Preț (RON) -->
+                    <div class="mb-4">
+                        <label class="form-label text-light small fw-bold">Price (RON)</label>
+                        <div class="d-flex gap-2">
+                            <input type="number" name="minPrice" value="@Context.Request.Query["minPrice"]" class="form-control form-control-sm bg-dark text-light border-secondary" placeholder="Min">
+                            <input type="number" name="maxPrice" value="@Context.Request.Query["maxPrice"]" class="form-control form-control-sm bg-dark text-light border-secondary" placeholder="Max">
+                        </div>
+                    </div>
+
+                    <!-- Filtru Disponibilitate -->
+                    <div class="mb-4">
+                        <label class="form-label text-light small fw-bold">Availability</label>
+                        <div class="form-check">
+                            <input class="form-check-input bg-dark border-secondary" type="checkbox" name="inStockOnly" value="true" id="inStock" @(Context.Request.Query["inStockOnly"] == "true" ? "checked" : "")>
+                            <label class="form-check-label text-light small" for="inStock">
+                                In stock only
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-gold btn-sm w-100 text-dark fw-bold">Apply Filters</button>
+                </form>
+            </div>
+        </div> <!-- Aici închidem corect coloana de stânga col-lg-3 -->
+        <!-- Grila de Produse (Dreapta) -->
+        <div class="col-lg-9">
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5 text-muted">
+                    <p>No merchandise available matching your criteria.</p>
+                </div>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-md-4 g-4">
+                    @foreach (var item in Model)
+                    {
+                        <div class="col">
+                            <div class="card h-100 bg-card border border-secondary rounded overflow-hidden shadow-sm">
+                                <!-- Imagine produs -->
+                                <div class="bg-dark text-center position-relative" style="height: 220px;">
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl" alt="@item.Title" class="w-100 h-100 object-fit-cover">
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                            <span>+</span>
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- Detalii produs -->
+                                <div class="card-body d-flex flex-column p-3">
+                                    <span class="text-muted" style="font-size: 0.75rem; text-transform: uppercase;">@item.Category.Name</span>
+                                    <h6 class="text-light fw-bold mt-1 mb-2" style="font-size: 0.9rem;">@item.Title</h6>
+                                    <div class="text-gold fw-bold mb-3" style="font-size: 0.95rem;">
+                                        @item.Price.ToString("0.00") RON
+                                    </div>
+
+                                    <!-- Buton Add to Cart -->
+                                    <form asp-controller="Cart" asp-action="Add" method="post" class="mt-auto">
+                                        <input type="hidden" name="productId" value="@item.Id" />
+                                        <button type="submit" class="btn btn-outline-gold btn-sm w-100" style="font-size: 0.8rem;">
+                                            Add to Cart
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div> 
+</div>
